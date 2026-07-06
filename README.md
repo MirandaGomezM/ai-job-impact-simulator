@@ -34,4 +34,3 @@ This tool is explicitly designed to avoid both alarmism and false reassurance. I
 
 - `simulador-impacto-ia.html` — functional MVP (this repo)
 - Final report (PDF/Word) — problem statement, solution description, validation & feedback, responsible AI considerations, key learnings
-- 3-minute demo video walkthrough
