@@ -1,0 +1,576 @@
+<div id="app-root"></div>
+
+<style>
+  #app-root {
+    --bg: #0f131a;
+    --surface: #171d27;
+    --surface-2: #1e2632;
+    --text: #eef1f4;
+    --text-dim: rgba(238,241,244,0.58);
+    --text-faint: rgba(238,241,244,0.38);
+    --teal: #4bd8ae;
+    --amber: #f5a35a;
+    --coral: #f16659;
+    --hairline: rgba(255,255,255,0.09);
+    --hairline-strong: rgba(255,255,255,0.16);
+
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+  #app-root * { box-sizing: border-box; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--teal);
+    box-shadow: 0 0 8px var(--teal);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 46px;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin: 0 0 16px;
+  }
+  h1 em { font-style: italic; font-weight: 500; color: var(--teal); }
+
+  .lede {
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--text-dim);
+    max-width: 56ch;
+    margin: 0 0 40px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 32px;
+  }
+
+  label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin: 0 0 9px;
+  }
+  .field { margin-bottom: 22px; }
+  .field:last-of-type { margin-bottom: 0; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  input, textarea {
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 12px 14px;
+    resize: vertical;
+    transition: border-color 0.15s ease;
+  }
+  input::placeholder, textarea::placeholder { color: var(--text-faint); }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(75,216,174,0.14);
+  }
+  button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  textarea { min-height: 96px; line-height: 1.55; }
+
+  .submit {
+    margin-top: 24px;
+    width: 100%;
+    background: var(--teal);
+    color: #0b1410;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    box-shadow: 0 0 0 rgba(75,216,174,0);
+  }
+  .submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(75,216,174,0.28); }
+  .submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .disclaimer {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text-faint);
+    margin-top: 18px;
+  }
+
+  /* results */
+  .results { margin-top: 52px; animation: rise 0.5s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .results { animation: none; } }
+
+  .summary {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.55;
+    margin-bottom: 44px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--hairline);
+    color: var(--text);
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    margin: 0 0 22px;
+  }
+
+  /* horizon */
+  .horizon-wrap { margin-bottom: 52px; }
+  .horizon {
+    position: relative;
+    height: 250px;
+    border-radius: 12px;
+    overflow: visible;
+    margin-bottom: 14px;
+    background: linear-gradient(to right, #241419 0%, #1c1b22 30%, #131b22 65%, #0e1a1c 100%);
+    border: 1px solid var(--hairline);
+  }
+  .horizon-floor {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: var(--hairline-strong);
+  }
+  .horizon-divider {
+    position: absolute; top: 0; bottom: 0; width: 1px;
+    background: rgba(255,255,255,0.06);
+  }
+  .zone-labels {
+    display: grid;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0 2px;
+  }
+  .task-pin {
+    position: absolute;
+    transform: translate(-50%, 0);
+    text-align: center;
+    max-width: 128px;
+  }
+  .task-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin: 0 auto 9px;
+    background: currentColor;
+    box-shadow: 0 0 12px currentColor, 0 0 3px currentColor;
+  }
+  .task-stem {
+    position: absolute;
+    left: 50%; width: 1px;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    opacity: 0.5;
+  }
+  .task-label {
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 500;
+    color: var(--text);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+  .risk-high { color: var(--coral); }
+  .risk-medium { color: var(--amber); }
+  .risk-low { color: var(--teal); }
+
+  .task-list { margin-top: 18px; }
+  .task-row {
+    display: flex; gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .task-row:first-child { border-top: none; }
+  .risk-chip {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 9px;
+    border-radius: 20px;
+    height: fit-content;
+    font-weight: 500;
+  }
+  .risk-chip.high { background: rgba(241,102,89,0.14); color: var(--coral); }
+  .risk-chip.medium { background: rgba(245,163,90,0.14); color: var(--amber); }
+  .risk-chip.low { background: rgba(75,216,174,0.14); color: var(--teal); }
+  .task-copy .t-name { font-weight: 600; margin-bottom: 4px; }
+  .task-copy .t-reason { font-size: 13.5px; color: var(--text-dim); line-height: 1.5; }
+
+  .pill-list { display: flex; flex-direction: column; gap: 10px; }
+  .pill {
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 14px 17px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    background: var(--surface);
+    transition: border-color 0.15s ease;
+  }
+  .pill:hover { border-color: var(--hairline-strong); }
+  .pill-num {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--teal);
+    margin-right: 10px;
+  }
+
+  .feedback-box {
+    margin-top: 52px;
+    border-top: 1px solid var(--hairline);
+    padding-top: 30px;
+  }
+  .feedback-row { display: flex; gap: 10px; margin-bottom: 14px; }
+  .fb-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    padding: 10px 18px;
+    border: 1px solid var(--hairline-strong);
+    background: transparent;
+    color: var(--text);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .fb-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .fb-btn.active { background: var(--teal); color: #0b1410; border-color: var(--teal); }
+  .fb-thanks { font-size: 14px; color: var(--text-dim); }
+
+  .loading-line {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .loading-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal);
+    animation: pulse 1.1s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--teal);
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  .error-box {
+    border: 1px solid rgba(241,102,89,0.35);
+    background: rgba(241,102,89,0.08);
+    color: var(--coral);
+    padding: 14px 16px;
+    font-size: 13.5px;
+    border-radius: 8px;
+    margin-top: 16px;
+  }
+
+  .reset-btn {
+    margin-top: 36px;
+    background: transparent;
+    border: 1px solid var(--hairline-strong);
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 32px; }
+    .row2 { grid-template-columns: 1fr; }
+    .horizon { height: 320px; }
+    .card { padding: 22px; }
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+function Horizon({ tasks }) {
+  const zoneX = () => {};
+  const positioned = tasks.map((t, i) => {
+    let x;
+    if (t.timeframe === 'now') x = 8 + Math.random() * 14;
+    else if (t.timeframe === 'soon') x = 28 + Math.random() * 34;
+    else x = 68 + Math.random() * 28;
+    return { ...t, x, y: 36 + (i % 3) * 60 };
+  });
+
+  return (
+    <div className="horizon-wrap">
+      <div className="section-label">Automation horizon</div>
+      <div className="horizon">
+        <div className="horizon-floor"></div>
+        <div className="horizon-divider" style={{ left: '25%' }}></div>
+        <div className="horizon-divider" style={{ left: '65%' }}></div>
+        {positioned.map((t, i) => (
+          <div key={i} className={`task-pin risk-${t.risk}`} style={{ left: `${t.x}%`, top: `${t.y}px` }}>
+            <div className="task-stem" style={{ height: `${222 - t.y}px`, top: '10px' }}></div>
+            <div className="task-dot"></div>
+            <div className="task-label">{t.name}</div>
+          </div>
+        ))}
+      </div>
+      <div className="zone-labels" style={{ gridTemplateColumns: '25% 40% 35%' }}>
+        <div>Happening now</div>
+        <div>2–5 years</div>
+        <div>5+ years</div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [form, setForm] = useState({ title: '', tasks: '', sector: '', years: '' });
+  const [status, setStatus] = useState('idle');
+  const [result, setResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [feedback, setFeedback] = useState(null);
+
+  const update = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+
+  const submit = async () => {
+    if (!form.title.trim() || !form.tasks.trim()) return;
+    setStatus('loading');
+    setErrorMsg('');
+    try {
+      const systemPrompt = `You are a labor market analyst specialized in the impact of AI on jobs. Analyze the described job and return ONLY a valid JSON object, no extra text, no markdown, no backticks. Exact format:
+{
+  "summary": "2-3 sentences with an honest, balanced assessment of this role's overall exposure to AI, no alarmism, no false reassurance",
+  "tasks": [
+    {"name": "short task name (max 5 words)", "risk": "high|medium|low", "timeframe": "now|soon|later", "reason": "1 concrete sentence explaining why"}
+  ],
+  "skills": ["concrete skill 1", "concrete skill 2", "..."],
+  "action_plan": ["concrete actionable step 1", "concrete step 2", "..."]
+}
+Rules:
+- Identify between 4 and 7 real tasks from the described role, not generic ones.
+- "timeframe": now = already being actively automated; soon = likely within 2-5 years; later = 5+ years or unlikely soon.
+- skills: 3 to 5 specific, actionable skills (avoid vague ones like "adaptability").
+- action_plan: 3 to 5 concrete steps the person could start this week.
+- Be honest and calibrated, neither catastrophizing nor overly reassuring. This is an educational estimate, not a certain prediction.`;
+
+      const userPrompt = `Job title: ${form.title}
+Sector: ${form.sector || 'not specified'}
+Years of experience: ${form.years || 'not specified'}
+Main tasks performed:
+${form.tasks}`;
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1500,
+          system: systemPrompt,
+          messages: [{ role: "user", content: userPrompt }]
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(`API error: ${data.error.type || ''} ${data.error.message || JSON.stringify(data.error)}`);
+      }
+      if (!data.content) {
+        throw new Error(`Unexpected response: ${JSON.stringify(data).slice(0, 300)}`);
+      }
+
+      const textBlock = data.content.find(b => b.type === 'text');
+      if (!textBlock) throw new Error('No text block came back in the response.');
+
+      let clean = textBlock.text.trim()
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/```\s*$/i, '');
+
+      const firstBrace = clean.indexOf('{');
+      const lastBrace = clean.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        clean = clean.slice(firstBrace, lastBrace + 1);
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(clean);
+      } catch (parseErr) {
+        throw new Error(`Could not parse the response as JSON: ${clean.slice(0, 200)}`);
+      }
+
+      setResult(parsed);
+      setStatus('done');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'We could not generate the analysis. Please try again in a few seconds.');
+      setStatus('error');
+    }
+  };
+
+  const sendFeedback = async (value) => {
+    setFeedback(value);
+    try {
+      const key = `feedback:${Date.now()}`;
+      await window.storage.set(key, JSON.stringify({
+        value, title: form.title, timestamp: new Date().toISOString()
+      }), false);
+    } catch (e) {
+      console.error('Could not save feedback', e);
+    }
+  };
+
+  return (
+    <div className="wrap">
+      <div className="eyebrow">AI Job Impact Simulator</div>
+      <h1>How exposed is<br/><em>your job</em> to AI?</h1>
+      <p className="lede">
+        Describe your role and your main tasks. You'll get an honest breakdown of which parts of your job
+        are most exposed to automation, on what timeline, and what you can do about it.
+      </p>
+
+      {status !== 'done' && (
+        <div className="card">
+          <div className="field">
+            <label>Job title</label>
+            <input type="text" placeholder="e.g. Accounting analyst, Community manager, Delivery driver"
+              value={form.title} onChange={update('title')} />
+          </div>
+          <div className="row2">
+            <div className="field">
+              <label>Sector (optional)</label>
+              <input type="text" placeholder="e.g. Retail, healthcare, logistics" value={form.sector} onChange={update('sector')} />
+            </div>
+            <div className="field">
+              <label>Years of experience (optional)</label>
+              <input type="text" placeholder="e.g. 5" value={form.years} onChange={update('years')} />
+            </div>
+          </div>
+          <div className="field">
+            <label>Main tasks you do day to day</label>
+            <textarea placeholder="e.g. I build monthly reports in Excel, answer client questions by email, review invoices, coordinate with vendors..."
+              value={form.tasks} onChange={update('tasks')} />
+          </div>
+
+          <button className="submit" disabled={status === 'loading'} onClick={submit}>
+            {status === 'loading' ? 'Analyzing...' : 'Analyze my job'}
+          </button>
+
+          {status === 'loading' && (
+            <p className="loading-line" style={{ marginTop: 16 }}>
+              <span className="loading-dot"></span>
+              Cross-checking your tasks against current automation patterns
+            </p>
+          )}
+          {status === 'error' && <div className="error-box">{errorMsg}</div>}
+
+          <p className="disclaimer">
+            This tool provides an educational estimate based on general automation patterns, not a certain
+            prediction or professional career advice. AI can make mistakes or carry bias: use this analysis as
+            a starting point for reflection, not as a final verdict on your career.
+          </p>
+        </div>
+      )}
+
+      {status === 'done' && result && (
+        <div className="results">
+          <div className="summary">{result.summary}</div>
+
+          <Horizon tasks={result.tasks} />
+
+          <div className="task-list" style={{ marginBottom: 52 }}>
+            <div className="section-label">Task-by-task breakdown</div>
+            {result.tasks.map((t, i) => (
+              <div className="task-row" key={i}>
+                <span className={`risk-chip ${t.risk}`}>{t.risk}</span>
+                <div className="task-copy">
+                  <div className="t-name">{t.name}</div>
+                  <div className="t-reason">{t.reason}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginBottom: 52 }}>
+            <div className="section-label">Skills worth developing</div>
+            <div className="pill-list">
+              {result.skills.map((s, i) => (
+                <div className="pill" key={i}><span className="pill-num">{String(i + 1).padStart(2, '0')}</span>{s}</div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="section-label">This week's action plan</div>
+            <div className="pill-list">
+              {result.action_plan.map((s, i) => (
+                <div className="pill" key={i}><span className="pill-num">{String(i + 1).padStart(2, '0')}</span>{s}</div>
+              ))}
+            </div>
+          </div>
+
+          <p className="disclaimer" style={{ marginTop: 36 }}>
+            Remember: this is an AI-generated educational estimate, not a certain prediction. For important
+            career decisions, pair this with input from people in your field and, where possible, a professional advisor.
+          </p>
+
+          <div className="feedback-box">
+            <div className="section-label">Validation</div>
+            {feedback === null ? (
+              <>
+                <p style={{ fontSize: 14, marginBottom: 16, color: 'var(--text-dim)' }}>Was this analysis useful and realistic?</p>
+                <div className="feedback-row">
+                  <button className="fb-btn" onClick={() => sendFeedback('useful')}>Yes, this helped</button>
+                  <button className="fb-btn" onClick={() => sendFeedback('not_useful')}>Not really</button>
+                </div>
+              </>
+            ) : (
+              <p className="fb-thanks">Thanks for the feedback — it helps improve the tool.</p>
+            )}
+          </div>
+
+          <button className="fb-btn reset-btn" onClick={() => { setStatus('idle'); setResult(null); setFeedback(null); }}>
+            Analyze another job
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app-root')).render(<App />);
+</script>
